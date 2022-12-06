@@ -37,7 +37,7 @@
          "theme_location" => "primary",
          "container" => false,
          "menu_class" => "nav navbar-nav navbar-right",
-         //  "walker" => new Walker_Nav_Primary(),
+         "walker" => new Walker_Nav_Primary(),
        ]); ?>
 						</div>
 					  </div><!-- /.container-fluid -->

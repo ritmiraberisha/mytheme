@@ -26,7 +26,7 @@
 
 class Walker_Nav_Primary extends Walker_Nav_menu
 {
-  function start_lvl(&$output, $depth)
+  function start_lvl(&$output, $depth = 0, $args = [])
   {
     //ul
     $indent = str_repeat("\t", $depth);

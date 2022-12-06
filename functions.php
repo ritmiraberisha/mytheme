@@ -95,7 +95,7 @@ add_action("widgets_init", "blog_widget_setup");
 	 Include Walker file
 
 */
-// require get_template_directory() . "/inc/walker.php";
+require get_template_directory() . "/inc/walker.php";
 
 /*
 	
@@ -107,3 +107,104 @@ function blog_remove_version()
   return "";
 }
 add_filter("the_generator", "blog_remove_version");
+
+/*
+	
+	 Custom Post Type
+	
+*/
+function blog_custom_post_type()
+{
+  $labels = [
+    "name" => "Agents",
+    "singular_name" => "Agents",
+    "add_new" => "Add Item",
+    "all_items" => "All Items",
+    "add_new_item" => "Add Item",
+    "edit_item" => "Edit Item",
+    "new_item" => "New Item",
+    "view_item" => "View Item",
+    "search_item" => "Search Agents",
+    "not_found" => "No items found",
+    "not_found_in_trash" => "No items found in trash",
+    "parent_item_colon" => "Parent Item",
+  ];
+  $args = [
+    "labels" => $labels,
+    "public" => true,
+    "has_archive" => true,
+    "publicly_queryable" => true,
+    "query_var" => true,
+    "rewrite" => true,
+    "capability_type" => "post",
+    "hierarchical" => false,
+    "supports" => ["title", "editor", "excerpt", "thumbnail", "revisions"],
+    // "taxonomies" => ["category", "post_tag"],
+    "menu_position" => 5,
+    "exclude_from_search" => false,
+  ];
+  register_post_type("agents", $args);
+}
+add_action("init", "blog_custom_post_type");
+
+function blog_custom_taxonomies()
+{
+  //add new taxonomy hierarchical
+  $labels = [
+    "name" => "Fields",
+    "singular_name" => "Field",
+    "search_items" => "Search Fields",
+    "all_items" => "All Fields",
+    "parent_item" => "Parent Field",
+    "parent_item_colon" => "Parent Field:",
+    "edit_item" => "Edit Field",
+    "update_item" => "Update Field",
+    "add_new_item" => "Add New Work Field",
+    "new_item_name" => "New Field Name",
+    "menu_name" => "Fields",
+  ];
+
+  $args = [
+    "hierarchical" => true,
+    "labels" => $labels,
+    "show_ui" => true,
+    "show_admin_column" => true,
+    "query_var" => true,
+    "rewrite" => ["slug" => "field"],
+  ];
+
+  register_taxonomy("field", ["agents"], $args);
+
+  //add new taxonomy NOT hierarchical
+
+  register_taxonomy("software", "agents", [
+    "label" => "Software",
+    "rewrite" => ["slug" => "software"],
+    "hierarchical" => false,
+  ]);
+}
+
+add_action("init", "blog_custom_taxonomies");
+
+/*
+	
+	Custom Term Function
+
+*/
+
+function blog_get_terms($postID, $term)
+{
+  $terms_list = wp_get_post_terms($postID, $term);
+  $output = "";
+
+  $i = 0;
+  foreach ($terms_list as $term) {
+    $i++;
+    if ($i > 1) {
+      $output .= ", ";
+    }
+    $output .= '<a href="' . get_term_link($term) . '">' . $term->name . "</a>";
+  }
+
+  return $output;
+}
